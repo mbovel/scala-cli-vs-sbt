@@ -1,0 +1,6 @@
+.scala-build
+project
+target
+.metals
+.vscode
+scala-cli.json

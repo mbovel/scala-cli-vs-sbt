@@ -1,0 +1,43 @@
+name: test
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+jobs:
+  test-sbt:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v3
+    - uses: coursier/cache-action@v6
+    - uses: actions/setup-java@v3
+      with:
+        distribution: temurin
+        java-version: 20
+    - name: Run library tests
+      run: |
+        cd sbt/mylib
+        sbt test
+    - name: Publish library locally
+      run: |
+        cd sbt/mylib
+        sbt publishLocal
+    - name: Run project
+      run: |
+        cd sbt/myproject
+        sbt run
+  test-scala-cli:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v3
+    - uses: VirtusLab/scala-cli-setup@v0.2.1
+    - name: Run library tests
+      run: scala-cli --power test scala-cli/mylib
+    - name: Publish library locally
+      run: scala-cli --power publish local scala-cli/mylib
+    - name: Run project
+      run: scala-cli scala-cli/myproject
